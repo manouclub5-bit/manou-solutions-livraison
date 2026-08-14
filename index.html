@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MANOU SOLUTIONS — Livraisons & Courses</title>
+  <meta name="description" content="MANOU SOLUTIONS — Livraison rapide, sûre et fiable dans le Grand Lomé.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .hero{background:linear-gradient(120deg,#e11d2e,#ff7a00)}
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<header class="hero text-white">
+  <div class="max-w-6xl mx-auto px-5 py-5 flex items-center justify-between">
+    <div>
+      <div class="font-black text-xl">MANOU SOLUTIONS</div>
+      <div class="text-xs uppercase tracking-wide">Pour livraisons et courses</div>
+    </div>
+    <a href="devenir-livreur.html" class="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-xl font-bold">🛵 Devenir livreur</a>
+  </div>
+  <div class="max-w-6xl mx-auto px-5 py-16 md:py-20">
+    <h1 class="text-4xl md:text-6xl font-black leading-tight max-w-3xl">Vous commandez,<br>nous livrons.</h1>
+    <p class="mt-4 text-lg">Rapide • Sûr • Fiable — Grand Lomé</p>
+    <a href="#commande" class="inline-block mt-7 bg-white text-red-600 px-6 py-3 rounded-xl font-black">Commander maintenant</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-5 py-10">
+  <div class="grid lg:grid-cols-3 gap-7">
+    <section id="commande" class="lg:col-span-2 bg-white rounded-2xl shadow p-6 md:p-8">
+      <h2 class="text-2xl font-black mb-6">Nouvelle livraison</h2>
+      <form id="orderForm" class="space-y-5">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="font-semibold">Nom du client</label><input id="clientName" required class="mt-2 w-full border rounded-xl p-3" placeholder="Nom et prénom"></div>
+          <div><label class="font-semibold">WhatsApp</label><input id="phone" required class="mt-2 w-full border rounded-xl p-3" placeholder="90 00 00 00"></div>
+        </div>
+        <div><label class="font-semibold">Article / course</label><input id="item" required class="mt-2 w-full border rounded-xl p-3" placeholder="Courses au marché, colis, pharmacie..."></div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div><label class="font-semibold">Adresse de départ</label><input id="from" required class="mt-2 w-full border rounded-xl p-3" placeholder="Ex. Adidogomé, Lomé"></div>
+          <div><label class="font-semibold">Adresse d'arrivée</label><input id="to" required class="mt-2 w-full border rounded-xl p-3" placeholder="Ex. Tokoin, Lomé"></div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div>
+            <label class="font-semibold">Véhicule</label>
+            <select id="vehicle" class="mt-2 w-full border rounded-xl p-3">
+              <option value="Moto" data-rate="80">Moto — 80 F/km</option>
+              <option value="Tricycle" data-rate="150">Tricycle — 150 F/km</option>
+              <option value="Voiture" data-rate="250">Voiture — 250 F/km</option>
+            </select>
+          </div>
+          <div><label class="font-semibold">Distance (km)</label><input id="distance" type="number" min="0" step="0.1" required class="mt-2 w-full border rounded-xl p-3" placeholder="Ex. 8"></div>
+          <div><label class="font-semibold">Tarif</label><div id="price" class="mt-2 bg-slate-100 rounded-xl p-3 font-black">0 F</div></div>
+        </div>
+        <button type="button" id="geoBtn" class="w-full border-2 border-red-500 text-red-600 py-3 rounded-xl font-bold">📍 Calculer automatiquement la distance</button>
+        <div class="bg-orange-50 rounded-xl p-4">
+          <div class="font-bold mb-3">Mode de paiement</div>
+          <div class="grid md:grid-cols-2 gap-3">
+            <label class="border bg-white rounded-xl p-3"><input type="radio" name="payment" value="À la livraison" checked> À la livraison</label>
+            <label class="border bg-white rounded-xl p-3"><input type="radio" name="payment" value="En ligne — CinetPay"> En ligne — CinetPay</label>
+          </div>
+        </div>
+        <button class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-black text-lg">CONFIRMER LA LIVRAISON</button>
+        <div id="result" class="hidden rounded-xl p-4 bg-emerald-50 border border-emerald-200"></div>
+      </form>
+    </section>
+
+    <aside class="space-y-5">
+      <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-xl font-black mb-4">Nos tarifs</h3>
+        <p>🏍️ Moto <b class="float-right">80 F/km</b></p>
+        <p>🛺 Tricycle <b class="float-right">150 F/km</b></p>
+        <p>🚗 Voiture <b class="float-right">250 F/km</b></p>
+      </div>
+      <div class="bg-white rounded-2xl shadow p-6">
+        <h3 class="text-xl font-black mb-4">Nous livrons</h3>
+        <ul class="space-y-2">
+          <li>✓ Achats au marché</li><li>✓ Produits locaux</li><li>✓ Produits de pharmacie</li>
+          <li>✓ Produits surgelés</li><li>✓ Colis et divers</li>
+        </ul>
+      </div>
+      <div class="bg-slate-900 text-white rounded-2xl p-6">
+        <h3 class="font-black mb-3">MANOU SOLUTIONS</h3>
+        <p>WhatsApp : +228 72 65 28 02</p>
+        <p>Email : manousolutionsbtp@gmail.com</p>
+        <p class="mt-2 text-slate-300">Zone : Grand Lomé</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="bg-slate-950 text-white text-center py-7">
+  <p>© 2026 MANOU SOLUTIONS — Livraisons et Courses</p>
+</footer>
+
+<script>
+const ADMIN_WHATSAPP = "22872652802";
+const rates = {Moto:80, Tricycle:150, Voiture:250};
+const vehicle = document.getElementById("vehicle");
+const distance = document.getElementById("distance");
+const price = document.getElementById("price");
+
+function updatePrice(){
+  const v = vehicle.value;
+  const d = Number(distance.value || 0);
+  price.textContent = Math.round(d * rates[v]).toLocaleString("fr-FR") + " F";
+}
+vehicle.addEventListener("change", updatePrice);
+distance.addEventListener("input", updatePrice);
+
+document.getElementById("geoBtn").addEventListener("click", async ()=>{
+  const from = document.getElementById("from").value.trim();
+  const to = document.getElementById("to").value.trim();
+  if(!from || !to){ alert("Renseignez les adresses de départ et d'arrivée."); return; }
+  const btn = document.getElementById("geoBtn");
+  btn.disabled = true; btn.textContent = "Calcul de la distance...";
+  try{
+    const q = async (s)=>{
+      const r = await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=tg&q="+encodeURIComponent(s+", Grand Lomé, Togo"));
+      const a = await r.json();
+      if(!a.length) throw new Error("Adresse introuvable");
+      return [Number(a[0].lat),Number(a[0].lon)];
+    };
+    const [a,b] = await Promise.all([q(from),q(to)]);
+    const R=6371, rad=x=>x*Math.PI/180;
+    const dLat=rad(b[0]-a[0]), dLon=rad(b[1]-a[1]);
+    const h=Math.sin(dLat/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(dLon/2)**2;
+    const km=R*2*Math.asin(Math.sqrt(h));
+    distance.value = Math.max(0.1, Math.round(km*10)/10);
+    updatePrice();
+  }catch(e){ alert("Impossible de calculer automatiquement. Vérifiez les adresses ou saisissez la distance manuellement."); }
+  finally{ btn.disabled=false; btn.textContent="📍 Calculer automatiquement la distance"; }
+});
+
+document.getElementById("orderForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const name=document.getElementById("clientName").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const item=document.getElementById("item").value.trim();
+  const from=document.getElementById("from").value.trim();
+  const to=document.getElementById("to").value.trim();
+  const v=vehicle.value, d=Number(distance.value||0), amount=Math.round(d*rates[v]);
+  const payment=document.querySelector('input[name="payment"]:checked').value;
+  const code="MANOU-"+Date.now().toString().slice(-6);
+  const text=`NOUVELLE LIVRAISON MANOU SOLUTIONS%0A%0ACode: ${code}%0AClient: ${name}%0AWhatsApp: ${phone}%0AArticle: ${item}%0ADépart: ${from}%0AArrivée: ${to}%0AVéhicule: ${v}%0ADistance: ${d} km%0AMontant: ${amount} F%0APaiement: ${payment}`;
+  const result=document.getElementById("result");
+  result.classList.remove("hidden");
+  result.innerHTML=`<b>Commande enregistrée : ${code}</b><br>Montant : ${amount.toLocaleString("fr-FR")} F<br><a class="underline font-bold" target="_blank" href="https://wa.me/${ADMIN_WHATSAPP}?text=${text}">Envoyer la commande sur WhatsApp</a>`;
+});
+</script>
+</body>
+</html>

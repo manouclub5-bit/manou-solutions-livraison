@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administration — MANOU SOLUTIONS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+<div id="login" class="min-h-screen grid place-items-center p-5">
+<div class="bg-white p-7 rounded-2xl shadow max-w-sm w-full">
+<h1 class="text-2xl font-black mb-2">MANOU SOLUTIONS</h1><p class="text-slate-500 mb-5">Administration</p>
+<input id="password" type="password" class="w-full border rounded-xl p-3 mb-3" placeholder="Mot de passe">
+<button id="loginBtn" class="w-full bg-red-600 text-white p-3 rounded-xl font-bold">Se connecter</button>
+<p class="text-xs text-slate-500 mt-4">Prototype statique : pour une vraie sécurité et un accès aux commandes de tous les clients, utilisez une base de données + authentification serveur.</p>
+</div></div>
+<div id="app" class="hidden">
+<header class="bg-slate-950 text-white p-5"><div class="max-w-6xl mx-auto flex justify-between"><b>MANOU SOLUTIONS — ADMIN</b><button id="logout" class="underline">Déconnexion</button></div></header>
+<main class="max-w-6xl mx-auto p-5 py-8">
+<div class="grid md:grid-cols-3 gap-5 mb-7">
+<div class="bg-white rounded-2xl shadow p-5"><div class="text-slate-500">Commandes</div><div id="ordersCount" class="text-3xl font-black">0</div></div>
+<div class="bg-white rounded-2xl shadow p-5"><div class="text-slate-500">Chiffre livraison</div><div id="revenue" class="text-3xl font-black">0 F</div></div>
+<div class="bg-white rounded-2xl shadow p-5"><div class="text-slate-500">Commission 20%</div><div id="commission" class="text-3xl font-black">0 F</div></div>
+</div>
+<section class="bg-white rounded-2xl shadow p-5">
+<h2 class="text-xl font-black mb-4">Commandes enregistrées sur cet appareil</h2>
+<div class="overflow-auto"><table class="w-full text-sm"><thead><tr class="border-b text-left"><th class="p-2">Code</th><th class="p-2">Client</th><th class="p-2">Montant</th><th class="p-2">Statut</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="text-xs text-slate-500 mt-4">Cette version GitHub statique ne reçoit pas automatiquement les commandes des autres appareils. Les commandes clients sont actuellement transmises à WhatsApp.</p>
+</section>
+</main></div>
+<script>
+const DEMO_PASSWORD="MANOU2026";
+const login=()=>{if(document.getElementById("password").value===DEMO_PASSWORD){sessionStorage.admin="1";show()}else alert("Mot de passe incorrect.")};
+function show(){document.getElementById("login").classList.add("hidden");document.getElementById("app").classList.remove("hidden");render()}
+function render(){const orders=JSON.parse(localStorage.getItem("manou_orders")||"[]");document.getElementById("ordersCount").textContent=orders.length;const total=orders.reduce((s,o)=>s+Number(o.amount||0),0);document.getElementById("revenue").textContent=total.toLocaleString("fr-FR")+" F";document.getElementById("commission").textContent=Math.round(total*.2).toLocaleString("fr-FR")+" F";document.getElementById("rows").innerHTML=orders.map(o=>`<tr class="border-b"><td class="p-2">${o.code||"-"}</td><td class="p-2">${o.client||"-"}</td><td class="p-2">${Number(o.amount||0).toLocaleString("fr-FR")} F</td><td class="p-2">${o.status||"En attente"}</td></tr>`).join("")}
+document.getElementById("loginBtn").onclick=login;document.getElementById("logout").onclick=()=>{sessionStorage.clear();location.reload()};if(sessionStorage.admin==="1")show();
+</script>
+</body></html>
