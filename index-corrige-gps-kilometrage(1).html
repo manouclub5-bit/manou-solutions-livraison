@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MANOU SOLUTIONS - Livraisons</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50">
+<header class="bg-gradient-to-r from-red-600 to-orange-500 text-white">
+  <div class="max-w-6xl mx-auto px-5 py-6">
+    <b class="text-2xl">MANOU SOLUTIONS</b><div>POUR LIVRAISONS ET COURSES</div>
+    <div class="py-12">
+      <h1 class="text-4xl md:text-6xl font-black">Vous commandez, nous livrons.</h1>
+      <p class="mt-3 text-lg">Rapide - Sûr - Fiable - Grand Lomé</p>
+      <a href="#commande" class="inline-block mt-6 bg-white text-red-600 font-bold px-6 py-3 rounded-xl">Commander maintenant</a>
+    </div>
+  </div>
+</header>
+
+<main id="commande" class="max-w-6xl mx-auto p-5 grid lg:grid-cols-3 gap-6">
+<section class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
+<h2 class="text-2xl font-black mb-6">Nouvelle livraison</h2>
+<form id="form" class="space-y-4">
+<div class="grid md:grid-cols-2 gap-4">
+<input id="client" required class="border rounded-xl p-3" placeholder="Nom et prénom">
+<input id="phone" required class="border rounded-xl p-3" placeholder="WhatsApp du client">
+</div>
+<input id="item" required class="w-full border rounded-xl p-3" placeholder="Article / course">
+<div class="grid md:grid-cols-2 gap-4">
+<input id="from" required class="border rounded-xl p-3" placeholder="Adresse de départ - ex. Adidogomé, Lomé">
+<input id="to" required class="border rounded-xl p-3" placeholder="Adresse d'arrivée - ex. Tokoin, Lomé">
+</div>
+
+<div class="rounded-xl border border-green-300 bg-green-50 p-4">
+<b>📍 GPS</b>
+<p id="gpsmsg" class="text-sm mt-1">Utilisez le bouton pour mettre votre position comme départ.</p>
+<button type="button" id="gps" class="mt-3 bg-green-600 text-white font-bold px-5 py-3 rounded-xl">📍 Obtenir ma position</button>
+</div>
+
+<div class="grid md:grid-cols-3 gap-4">
+<select id="vehicle" class="border rounded-xl p-3">
+<option value="80">🏍️ Moto - 80 F/km</option>
+<option value="150">🛺 Tricycle - 150 F/km</option>
+<option value="250">🚗 Voiture - 250 F/km</option>
+</select>
+<input id="distance" readonly class="border rounded-xl p-3 bg-slate-100" placeholder="Distance (km)">
+<input id="price" readonly class="border rounded-xl p-3 bg-slate-100 font-bold" value="0 F">
+</div>
+
+<button type="button" id="calc" class="w-full border-2 border-red-500 text-red-600 font-bold py-3 rounded-xl">
+📍 Calculer automatiquement la distance et le prix
+</button>
+<p id="status" class="text-sm"></p>
+
+<div class="bg-orange-50 rounded-xl p-4">
+<b>Mode de paiement</b>
+<label class="block mt-2"><input type="radio" name="pay" value="livraison" checked> Paiement à la livraison</label>
+<label class="block mt-2"><input type="radio" name="pay" value="online"> Paiement en ligne - CinéPay</label>
+</div>
+<button class="w-full bg-red-600 text-white font-black py-4 rounded-xl">CONFIRMER LA LIVRAISON</button>
+</form>
+<div id="result" class="hidden mt-4 bg-green-50 border border-green-300 rounded-xl p-4"></div>
+</section>
+
+<aside class="space-y-5">
+<div class="bg-white rounded-2xl shadow p-5"><h3 class="text-xl font-black">Nos tarifs</h3>
+<p class="mt-3">🏍️ Moto <b class="float-right">80 F/km</b></p>
+<p>🛺 Tricycle <b class="float-right">150 F/km</b></p>
+<p>🚗 Voiture <b class="float-right">250 F/km</b></p></div>
+<div class="bg-white rounded-2xl shadow p-5"><h3 class="text-xl font-black">Nous livrons</h3>
+<p class="mt-3">✓ Achats au marché</p><p>✓ Produits locaux</p><p>✓ Produits de pharmacie</p><p>✓ Produits surgelés</p><p>✓ Colis et divers</p></div>
+<div class="bg-slate-900 text-white rounded-2xl shadow p-5"><b>MANOU SOLUTIONS</b>
+<p class="mt-3">WhatsApp : +228 72 65 28 02</p><p>Email : manousolutionsbtp@gmail.com</p></div>
+</aside>
+</main>
+
+<script>
+const NOMINATIM="https://nominatim.openstreetmap.org/search";
+const OSRM="https://router.project-osrm.org/route/v1/driving";
+let km=0;
+
+async function geo(address){
+  const u=new URL(NOMINATIM);
+  u.searchParams.set("format","jsonv2");
+  u.searchParams.set("q",address+", Grand Lomé, Togo");
+  u.searchParams.set("limit","1");
+  u.searchParams.set("countrycodes","tg");
+  const r=await fetch(u,{headers:{"Accept-Language":"fr"}});
+  if(!r.ok) throw Error("Service GPS indisponible");
+  const d=await r.json();
+  if(!d.length) throw Error("Adresse introuvable : "+address);
+  return {lat:+d[0].lat,lon:+d[0].lon};
+}
+
+async function calculer(){
+  const a=document.getElementById("from").value.trim();
+  const b=document.getElementById("to").value.trim();
+  const s=document.getElementById("status");
+  if(!a||!b){s.textContent="Renseignez le départ et l'arrivée.";s.className="text-sm text-red-600";return;}
+  s.textContent="Recherche des adresses et calcul du trajet...";
+  s.className="text-sm text-slate-600";
+  try{
+    const [A,B]=await Promise.all([geo(a),geo(b)]);
+    const url=OSRM+"/"+A.lon+","+A.lat+";"+B.lon+","+B.lat+"?overview=false";
+    const r=await fetch(url);
+    const d=await r.json();
+    if(d.code!=="Ok"||!d.routes.length) throw Error("Itinéraire introuvable");
+    km=d.routes[0].distance/1000;
+    document.getElementById("distance").value=km.toFixed(2);
+    const prix=Math.ceil(km*+document.getElementById("vehicle").value);
+    document.getElementById("price").value=prix.toLocaleString("fr-FR")+" F";
+    s.textContent="✓ "+km.toFixed(2)+" km - prix : "+prix.toLocaleString("fr-FR")+" F";
+    s.className="text-sm text-green-700";
+  }catch(e){
+    km=0; document.getElementById("distance").value=""; document.getElementById("price").value="0 F";
+    s.textContent="❌ "+e.message+" Vérifiez les adresses et réessayez.";
+    s.className="text-sm text-red-600";
+  }
+}
+
+document.getElementById("calc").onclick=calculer;
+document.getElementById("vehicle").onchange=()=>{if(km)document.getElementById("price").value=Math.ceil(km*+vehicle.value).toLocaleString("fr-FR")+" F";};
+
+document.getElementById("gps").onclick=()=>{
+  const msg=document.getElementById("gpsmsg");
+  if(!navigator.geolocation){msg.textContent="❌ GPS non supporté par ce navigateur.";return;}
+  msg.textContent="Localisation en cours...";
+  navigator.geolocation.getCurrentPosition(async p=>{
+    try{
+      const u=new URL("https://nominatim.openstreetmap.org/reverse");
+      u.searchParams.set("format","jsonv2");u.searchParams.set("lat",p.coords.latitude);u.searchParams.set("lon",p.coords.longitude);
+      const r=await fetch(u,{headers:{"Accept-Language":"fr"}});
+      const d=await r.json();
+      document.getElementById("from").value=d.display_name||p.coords.latitude+","+p.coords.longitude;
+      msg.textContent="✓ Position GPS obtenue.";
+      if(document.getElementById("to").value.trim()) calculer();
+    }catch(e){
+      document.getElementById("from").value=p.coords.latitude+","+p.coords.longitude;
+      msg.textContent="✓ GPS obtenu (coordonnées).";
+    }
+  },e=>{
+    msg.textContent=e.code===1?"❌ Autorisation GPS refusée. Autorisez la localisation dans le navigateur.":"❌ GPS indisponible. Réessayez.";
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:30000});
+};
+
+document.getElementById("form").onsubmit=e=>{
+  e.preventDefault();
+  if(!km){calculer();return;}
+  const ref="MS-"+Date.now().toString().slice(-8);
+  const total=Math.ceil(km*+vehicle.value);
+  const res=document.getElementById("result");
+  res.classList.remove("hidden");
+  res.innerHTML="<b>✓ Commande prête</b><br>Référence : <b>"+ref+"</b><br>Distance : <b>"+km.toFixed(2)+" km</b><br>Prix : <b>"+total.toLocaleString("fr-FR")+" F</b>";
+};
+</script>
+</body>
+</html>
