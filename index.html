@@ -1,1 +1,195 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MANOU SOLUTIONS — Livraisons & Courses</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+<header class="bg-gradient-to-r from-red-600 to-orange-500 text-white">
+  <div class="max-w-6xl mx-auto px-5 py-5 flex justify-between items-center">
+    <div><b class="text-xl">MANOU SOLUTIONS</b><div class="text-xs">POUR LIVRAISONS ET COURSES</div></div>
+    <a href="devenir-livreur.html" class="bg-emerald-500 px-4 py-2 rounded-xl font-bold">🛵 Devenir livreur</a>
+  </div>
+  <div class="max-w-6xl mx-auto px-5 py-14">
+    <h1 class="text-4xl md:text-6xl font-black">Vous commandez,<br>nous livrons.</h1>
+    <p class="mt-4 text-lg">Rapide • Sûr • Fiable — Grand Lomé</p>
+  </div>
+</header>
 
+<main class="max-w-6xl mx-auto p-5 py-10">
+<div class="grid lg:grid-cols-3 gap-7">
+<section class="lg:col-span-2 bg-white rounded-2xl shadow p-6 md:p-8">
+<h2 class="text-2xl font-black">Nouvelle livraison</h2>
+<p class="text-slate-500 mb-6">Choisissez les adresses dans les résultats : le kilométrage routier et le prix seront calculés automatiquement.</p>
+
+<form id="form" class="space-y-5">
+<div class="grid md:grid-cols-2 gap-4">
+<div><label class="font-bold">Nom</label><input id="clientName" required class="mt-2 w-full border rounded-xl p-3" placeholder="Nom et prénom"></div>
+<div><label class="font-bold">WhatsApp</label><input id="phone" required class="mt-2 w-full border rounded-xl p-3" placeholder="90 00 00 00"></div>
+</div>
+
+<div><label class="font-bold">Article / course</label><input id="item" required class="mt-2 w-full border rounded-xl p-3" placeholder="Courses, colis, pharmacie..."></div>
+
+<div class="grid md:grid-cols-2 gap-4">
+<div>
+<label class="font-bold">📍 Départ — Grand Lomé</label>
+<input id="from" autocomplete="off" required class="mt-2 w-full border rounded-xl p-3" placeholder="Ex. Adidogomé">
+<div id="fromResults" class="border rounded-xl mt-1 bg-white hidden max-h-52 overflow-auto"></div>
+</div>
+<div>
+<label class="font-bold">📍 Arrivée — Grand Lomé</label>
+<input id="to" autocomplete="off" required class="mt-2 w-full border rounded-xl p-3" placeholder="Ex. Tokoin">
+<div id="toResults" class="border rounded-xl mt-1 bg-white hidden max-h-52 overflow-auto"></div>
+</div>
+</div>
+
+<button type="button" id="calculate" class="w-full bg-red-600 text-white py-3 rounded-xl font-black">📍 CALCULER DISTANCE ET PRIX</button>
+
+<div id="routeInfo" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4"></div>
+
+<div class="grid md:grid-cols-3 gap-4">
+<div><label class="font-bold">Véhicule</label>
+<select id="vehicle" class="mt-2 w-full border rounded-xl p-3">
+<option value="Moto">🏍️ Moto — 80 F/km</option>
+<option value="Tricycle">🛺 Tricycle — 150 F/km</option>
+<option value="Voiture">🚗 Voiture — 250 F/km</option>
+</select></div>
+<div><label class="font-bold">Kilométrage</label><input id="distance" readonly class="mt-2 w-full bg-slate-100 border rounded-xl p-3" placeholder="Automatique"></div>
+<div><label class="font-bold">Prix</label><div id="price" class="mt-2 bg-slate-100 rounded-xl p-3 font-black">—</div></div>
+</div>
+
+<div class="bg-orange-50 p-4 rounded-xl">
+<b>Mode de paiement</b>
+<div class="mt-3 flex gap-5 flex-wrap">
+<label><input type="radio" name="payment" value="À la livraison" checked> À la livraison</label>
+<label><input type="radio" name="payment" value="En ligne — CinetPay"> En ligne — CinetPay</label>
+</div>
+</div>
+
+<button class="w-full bg-slate-900 text-white py-4 rounded-xl font-black">CONFIRMER LA LIVRAISON</button>
+<div id="result" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4"></div>
+</form>
+</section>
+
+<aside class="space-y-5">
+<div class="bg-white rounded-2xl shadow p-6">
+<h3 class="text-xl font-black mb-4">Tarifs</h3>
+<p>🏍️ Moto <b class="float-right">80 F/km</b></p>
+<p>🛺 Tricycle <b class="float-right">150 F/km</b></p>
+<p>🚗 Voiture <b class="float-right">250 F/km</b></p>
+</div>
+<div class="bg-slate-900 text-white rounded-2xl p-6">
+<b>MANOU SOLUTIONS</b>
+<p class="mt-3">WhatsApp : +228 72 65 28 02</p>
+<p>Email : manousolutionsbtp@gmail.com</p>
+<p>Zone : Grand Lomé</p>
+</div>
+</aside>
+</div>
+</main>
+
+<footer class="text-center p-8 bg-slate-950 text-white">© 2026 MANOU SOLUTIONS — Livraisons & Courses</footer>
+
+<script>
+const rates={Moto:80,Tricycle:150,Voiture:250};
+let fromPoint=null,toPoint=null;
+
+async function searchPlace(text){
+  const url="https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=tg&q="+encodeURIComponent(text+", Lomé, Togo");
+  const response=await fetch(url);
+  if(!response.ok) throw new Error("Recherche indisponible");
+  const data=await response.json();
+  return data.filter(x=>Number(x.lat)>=5.8&&Number(x.lat)<=6.4&&Number(x.lon)>=0.8&&Number(x.lon)<=1.6);
+}
+
+function addressSearch(inputId,resultsId,setPoint){
+  const input=document.getElementById(inputId), box=document.getElementById(resultsId);
+  let timer;
+  input.addEventListener("input",()=>{
+    setPoint(null);
+    clearTimeout(timer);
+    if(input.value.trim().length<2){box.classList.add("hidden");return}
+    timer=setTimeout(async()=>{
+      try{
+        const results=await searchPlace(input.value);
+        box.innerHTML="";
+        if(!results.length){box.innerHTML='<div class="p-3 text-slate-500">Aucun résultat trouvé. Essayez un quartier ou une adresse plus précise.</div>'}
+        results.forEach(place=>{
+          const b=document.createElement("button");
+          b.type="button"; b.className="block w-full text-left p-3 hover:bg-slate-100 border-b";
+          b.textContent=place.display_name;
+          b.onclick=()=>{input.value=place.display_name;setPoint([Number(place.lon),Number(place.lat)]);box.classList.add("hidden")};
+          box.appendChild(b);
+        });
+        box.classList.remove("hidden");
+      }catch(e){
+        box.innerHTML='<div class="p-3 text-red-600">Recherche temporairement indisponible.</div>';
+        box.classList.remove("hidden");
+      }
+    },700);
+  });
+}
+
+addressSearch("from","fromResults",p=>fromPoint=p);
+addressSearch("to","toResults",p=>toPoint=p);
+
+async function getRoadDistance(a,b){
+  const url="https://router.project-osrm.org/route/v1/driving/"+a.join(",")+";"+b.join(",")+"?overview=false";
+  const response=await fetch(url);
+  if(!response.ok) throw new Error("Trajet indisponible");
+  const data=await response.json();
+  if(data.code!=="Ok"||!data.routes||!data.routes.length) throw new Error("Aucun trajet");
+  return data.routes[0].distance/1000;
+}
+
+function updatePrice(){
+  const km=Number(document.getElementById("distance").value||0);
+  const vehicle=document.getElementById("vehicle").value;
+  document.getElementById("price").textContent=km ? Math.round(km*rates[vehicle]).toLocaleString("fr-FR")+" F" : "—";
+}
+document.getElementById("vehicle").addEventListener("change",updatePrice);
+
+document.getElementById("calculate").addEventListener("click",async()=>{
+  if(!fromPoint||!toPoint){alert("Sélectionnez d'abord une adresse de départ et une adresse d'arrivée dans les résultats proposés.");return}
+  const btn=document.getElementById("calculate");
+  btn.disabled=true;btn.textContent="⏳ Calcul du trajet...";
+  try{
+    const km=await getRoadDistance(fromPoint,toPoint);
+    document.getElementById("distance").value=km.toFixed(1);
+    updatePrice();
+    const info=document.getElementById("routeInfo");
+    info.classList.remove("hidden");
+    info.innerHTML="✅ Distance routière : <b>"+km.toFixed(1)+" km</b><br>💰 Prix : <b>"+document.getElementById("price").textContent+"</b>";
+  }catch(e){alert("Le trajet n'a pas pu être calculé. Essayez de sélectionner des adresses plus précises.")}
+  finally{btn.disabled=false;btn.textContent="📍 CALCULER DISTANCE ET PRIX"}
+});
+
+document.getElementById("form").addEventListener("submit",e=>{
+  e.preventDefault();
+  const km=Number(document.getElementById("distance").value||0);
+  if(!km){alert("Calculez d'abord la distance.");return}
+  const vehicle=document.getElementById("vehicle").value;
+  const amount=Math.round(km*rates[vehicle]);
+  const code="MANOU-"+Date.now().toString().slice(-7);
+  const payment=document.querySelector('input[name="payment"]:checked').value;
+  const msg=encodeURIComponent(
+    "NOUVELLE LIVRAISON MANOU SOLUTIONS\n"+
+    "Code: "+code+"\n"+
+    "Client: "+document.getElementById("clientName").value+"\n"+
+    "WhatsApp: "+document.getElementById("phone").value+"\n"+
+    "Article: "+document.getElementById("item").value+"\n"+
+    "Départ: "+document.getElementById("from").value+"\n"+
+    "Arrivée: "+document.getElementById("to").value+"\n"+
+    "Véhicule: "+vehicle+"\n"+
+    "Distance: "+km.toFixed(1)+" km\n"+
+    "Montant: "+amount+" F\n"+
+    "Paiement: "+payment
+  );
+  const result=document.getElementById("result");
+  result.classList.remove("hidden");
+  result.innerHTML="<b>Commande "+code+" prête.</b><br>Montant : "+amount.toLocaleString("fr-FR")+" F<br><a class='underline font-bold' target='_blank' href='https://wa.me/22872652802?text="+msg+"'>Envoyer la commande sur WhatsApp</a>";
+});
+</script>
+</body>
+</html>
