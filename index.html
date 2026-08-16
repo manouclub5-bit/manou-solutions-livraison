@@ -1,11 +1,482 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MANOU SOLUTIONS</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
-body{font-family:Arial;margin:0;background:#f5f7fb;color:#111827}header{background:linear-gradient(110deg,#e51d25,#ff7518);color:white;padding:25px}.wrap{max-width:1050px;margin:auto}.hero{padding:45px 0}h1{font-size:44px}.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin:25px auto}.card{background:white;padding:22px;border-radius:15px;box-shadow:0 7px 22px #0001}input,select,button{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:9px;box-sizing:border-box}button{font-weight:bold;cursor:pointer}.red{background:#e51d25;color:white}.green{background:#08a84f;color:white}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}#result{display:none;background:#ecfdf5;padding:12px;margin-top:12px;border-radius:9px}@media(max-width:800px){.grid,.row,.row3{grid-template-columns:1fr}h1{font-size:34px}}
-</style></head><body><header><div class="wrap"><b>MANOU SOLUTIONS</b><a href="devenir-livreur.html" style="float:right;color:white">🛵 Devenir livreur</a><div class="hero"><h1>Vous commandez, nous livrons.</h1><p>Rapide • Sûr • Fiable — Grand Lomé</p></div></div></header>
-<main class="wrap grid"><section class="card"><h2>Nouvelle livraison</h2><form id="f"><div class="row"><div><label>Nom du client</label><input id="name" required></div><div><label>WhatsApp</label><input id="phone" required placeholder="+228..."></div></div><label>Article / course</label><input id="item" required><div class="row"><div><label>Départ</label><input id="from" required placeholder="Adidogomé, Lomé"></div><div><label>Arrivée</label><input id="to" required placeholder="Tokoin, Lomé"></div></div><div class="row3"><div><label>Véhicule</label><select id="vehicle"><option value="moto">Moto — 80 F/km</option><option value="tricycle">Tricycle — 150 F/km</option><option value="voiture">Voiture — 250 F/km</option></select></div><div><label>Distance (km)</label><input id="dist" readonly></div><div><label>Tarif</label><input id="price" readonly value="0 F"></div></div><button type="button" id="calc">📍 Calculer automatiquement la distance</button><p><label><input type="radio" name="pay" value="delivery" checked> Paiement à la livraison</label><label><input type="radio" name="pay" value="online"> Paiement en ligne</label></p><button class="red">CONFIRMER LA LIVRAISON</button><div id="result"></div></form></section><aside><div class="card"><h3>Nos tarifs</h3><p>🏍️ 80 F/km</p><p>🛺 150 F/km</p><p>🚗 250 F/km</p></div><div class="card"><h3>Contact</h3><p>WhatsApp : +228 72 65 28 02</p><p>manousolutionsbtp@gmail.com</p></div></aside></main>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MANOU SOLUTIONS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+background:#f5f7fb;
+color:#111827
+}
+
+header{
+background:linear-gradient(110deg,#e51d25,#ff7518);
+color:white;
+padding:25px
+}
+
+.wrap{
+max-width:1050px;
+margin:auto
+}
+
+.hero{
+padding:45px 0
+}
+
+h1{
+font-size:44px
+}
+
+.grid{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+margin:25px auto
+}
+
+.card{
+background:white;
+padding:22px;
+border-radius:15px;
+box-shadow:0 7px 22px #0001
+}
+
+input,select,button{
+width:100%;
+padding:12px;
+margin:6px 0;
+border:1px solid #ddd;
+border-radius:9px;
+box-sizing:border-box
+}
+
+button{
+font-weight:bold;
+cursor:pointer
+}
+
+.red{
+background:#e51d25;
+color:white
+}
+
+.green{
+background:#08a84f;
+color:white
+}
+
+.row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.row3{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px
+}
+
+#result{
+display:none;
+background:#ecfdf5;
+padding:12px;
+margin-top:12px;
+border-radius:9px
+}
+
+@media(max-width:800px){
+.grid,.row,.row3{
+grid-template-columns:1fr
+}
+
+h1{
+font-size:34px
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="wrap">
+
+<b>MANOU SOLUTIONS</b>
+
+<a href="devenir-livreur.html"
+style="float:right;color:white">
+🛵 Devenir livreur
+</a>
+
+<div class="hero">
+<h1>Vous commandez, nous livrons.</h1>
+<p>Rapide • Sûr • Fiable — Grand Lomé</p>
+</div>
+
+</div>
+</header>
+
+<main class="wrap grid">
+
+<section class="card">
+
+<h2>Nouvelle livraison</h2>
+
+<form id="f">
+
+<div class="row">
+
+<div>
+<label>Nom du client</label>
+<input id="name" required>
+</div>
+
+<div>
+<label>WhatsApp</label>
+<input id="phone" required placeholder="+228...">
+</div>
+
+</div>
+
+<label>Article / course</label>
+<input id="item" required>
+
+<div class="row">
+
+<div>
+<label>Départ</label>
+<input id="from" required placeholder="Adidogomé, Lomé">
+</div>
+
+<div>
+<label>Arrivée</label>
+<input id="to" required placeholder="Tokoin, Lomé">
+</div>
+
+</div>
+
+<div class="row3">
+
+<div>
+<label>Véhicule</label>
+
+<select id="vehicle">
+
+<option value="moto">
+Moto — 80 F/km
+</option>
+
+<option value="tricycle">
+Tricycle — 150 F/km
+</option>
+
+<option value="voiture">
+Voiture — 250 F/km
+</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Distance (km)</label>
+<input id="dist" readonly>
+</div>
+
+<div>
+<label>Tarif</label>
+<input id="price" readonly value="0 F">
+</div>
+
+</div>
+
+<button
+type="button"
+id="calc"
+class="green">
+📍 Calculer automatiquement la distance
+</button>
+
+<p>
+<label>
+<input
+type="radio"
+name="pay"
+value="cash"
+checked>
+Paiement à la livraison
+</label>
+
+<label>
+<input
+type="radio"
+name="pay"
+value="online">
+Paiement en ligne
+</label>
+</p>
+
+<button class="red">
+CONFIRMER LA LIVRAISON
+</button>
+
+<div id="result"></div>
+
+</form>
+
+</section>
+
+<aside>
+
+<div class="card">
+
+<h3>Nos tarifs</h3>
+
+<p>🏍️ 80 F/km</p>
+<p>🛺 150 F/km</p>
+<p>🚗 250 F/km</p>
+
+</div>
+
+<div class="card">
+
+<h3>Contact</h3>
+
+<p>WhatsApp : +228 72 65 28 02</p>
+<p>manousolutionsbtp@gmail.com</p>
+
+</div>
+
+</aside>
+
+</main>
+
 <script>
-const sb=supabase.createClient("https://jgcbwtxdwbwetiugbfrk.supabase.co","sb_publishable_aMVbSddSr8Z7sRI12cwtoA_Y6LhvOSf"), rates={moto:80,tricycle:150,voiture:250}, $=x=>document.getElementById(x);
-function price(){let p=(+$("dist").value||0)*rates[$("vehicle").value];$("price").value=Math.round(p).toLocaleString("fr-FR")+" F";}$("vehicle").onchange=price;
-async function geo(q){let r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=tg&q="+encodeURIComponent(q+", Lomé, Togo"));let a=await r.json();if(!a[0])throw Error("Adresse introuvable : "+q);return[+a[0].lon,+a[0].lat];}
-$("calc").onclick=async()=>{try{let a=await geo($("from").value),b=await geo($("to").value);let r=await fetch(`https://router.project-osrm.org/route/v1/driving/${a[0]},${a[1]};${b[0]},${b[1]}?overview=false`),j=await r.json();if(j.code!=="Ok")throw Error("Itinéraire introuvable");$("dist").value=(j.routes[0].distance/1000).toFixed(2);price();}catch(e){alert(e.message)}};
-$("f").onsubmit=async e=>{e.preventDefault();if(!+$("dist").value){alert("Calcule d'abord la distance.");return}let ref="MS-"+Date.now().toString(36).toUpperCase(),amount=Math.round(+$("dist").value*rates[$("vehicle").value]);let{error}=await sb.from("orders").insert({reference:ref,client_name:$("name").value,client_phone:$("phone").value,item:$("item").value,from_address:$("from").value,to_address:$("to").value,vehicle:$("vehicle").value,distance_km:+$("dist").value,amount,payment_method:document.querySelector('input[name=pay]:checked').value,status:"pending"});if(error)alert(error.message);else{$("result").style.display="block";$("result").innerHTML="Commande enregistrée ✅<br>Référence : <b>"+ref+"</b><br>Montant : <b>"+amount.toLocaleString("fr-FR")+" F</b>"}};
-</script></body></html>
+
+const sb = supabase.createClient(
+"https://jgcbwtxdwbwetiugbfrk.supabase.co",
+"sb_publishable_aMVbSddSr8Z7sRI12cwtoA_Y6LhvOSf"
+);
+
+const rates = {
+moto:80,
+tricycle:150,
+voiture:250
+};
+
+const $ = x => document.getElementById(x);
+
+
+/* =========================
+   CALCUL DU PRIX
+========================= */
+
+function price(){
+
+let distance = +$("dist").value || 0;
+
+let tarif = rates[$("vehicle").value];
+
+let montant = distance * tarif;
+
+$("price").value =
+Math.round(montant).toLocaleString("fr-FR")+" F";
+
+}
+
+$("vehicle").onchange = price;
+
+
+/* =========================
+   RECHERCHE GPS
+========================= */
+
+async function geo(q){
+
+let r = await fetch(
+"https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=tg&q="
++
+encodeURIComponent(q+", Lomé, Togo")
+);
+
+let a = await r.json();
+
+if(!a[0])
+throw Error("Adresse introuvable : "+q);
+
+return [
++a[0].lon,
++a[0].lat
+];
+
+}
+
+
+/* =========================
+   CALCUL AUTOMATIQUE DISTANCE
+========================= */
+
+$("calc").onclick = async () => {
+
+try{
+
+let a = await geo($("from").value);
+
+let b = await geo($("to").value);
+
+let r = await fetch(
+`https://router.project-osrm.org/route/v1/driving/${a[0]},${a[1]};${b[0]},${b[1]}?overview=false`
+);
+
+let j = await r.json();
+
+if(j.code !== "Ok")
+throw Error("Itinéraire introuvable");
+
+$("dist").value =
+(j.routes[0].distance / 1000).toFixed(2);
+
+price();
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+};
+
+
+/* =========================
+   ENREGISTREMENT COMMANDE
+========================= */
+
+$("f").onsubmit = async e => {
+
+e.preventDefault();
+
+if(!+$("dist").value){
+
+alert("Calcule d'abord la distance.");
+
+return;
+
+}
+
+
+/* Référence */
+
+let ref =
+"MS-"+
+Date.now()
+.toString(36)
+.toUpperCase();
+
+
+/* Montant */
+
+let amount_fcfa =
+Math.round(
++$("dist").value *
+rates[$("vehicle").value]
+);
+
+
+/* Mode de paiement */
+
+let payment_method =
+document.querySelector(
+'input[name="pay"]:checked'
+).value;
+
+
+/* Enregistrement Supabase */
+
+let {error} = await sb
+.from("orders")
+.insert({
+
+reference:ref,
+
+client_name:$("name").value,
+
+client_phone:$("phone").value,
+
+item:$("item").value,
+
+from_address:$("from").value,
+
+to_address:$("to").value,
+
+vehicle:$("vehicle").value,
+
+distance_km:+$("dist").value,
+
+/*
+IMPORTANT :
+la colonne de ta base s'appelle
+amount_fcfa
+*/
+
+amount_fcfa:amount_fcfa,
+
+/*
+IMPORTANT :
+Supabase accepte cash ou online
+*/
+
+payment_method:payment_method,
+
+status:"pending"
+
+});
+
+
+/* Erreur */
+
+if(error){
+
+console.error(error);
+
+alert(
+"Erreur Supabase :\n"+
+error.message
+);
+
+return;
+
+}
+
+
+/* Succès */
+
+$("result").style.display="block";
+
+$("result").innerHTML =
+
+"Commande enregistrée ✅<br>"+
+"Référence : <b>"+ref+"</b><br>"+
+"Distance : <b>"+$("dist").value+" km</b><br>"+
+"Montant : <b>"+
+amount_fcfa.toLocaleString("fr-FR")+
+" F</b><br>"+
+"Paiement : <b>"+
+(payment_method==="cash"
+?"À la livraison"
+:"En ligne")+
+"</b>";
+
+};
+
+</script>
+
+</body>
+</html>
